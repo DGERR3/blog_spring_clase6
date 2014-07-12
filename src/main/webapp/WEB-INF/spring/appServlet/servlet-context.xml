@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+	<!-- HABILITA LOS ANNOTATIONS DE SPRING -->
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+	<!-- ESTA EQTIQUETA LE DICE A SPRING QUE CUALQUIER RUTA QUE SEA DE LA FORMA 
+		CONTEXT ROOT/resources/recurso estatico El parametro location = ES EL NOMBRE 
+		REAL DE LA CARPETA ESTATICA mapping es un nombre virtual que se le da a esta 
+		carpeta -->
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	<!-- LE DICE A SPRING DONDE BUSCAR CLASES CON ANNOTATIONS DE SPRING -->
+	<context:component-scan base-package="org.upiita.spring.controladores" />
+	<!-- ESTA PROPIEDAD CONTROLA LOS ARCHIVOS DE INTERNACIONALIZACION -->
+	<beans:bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<beans:property name="basename" value="mensajes" />
+	</beans:bean>
+	<!-- DAMOS DE ALTA UN RESOLVEDOR DE LOCALIDAD EN COOKIE -->
+	<!-- <beans:bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"> 
+		<beans:property name="cookieName" value="laCookieDelLenguaje" /> <beans:property 
+		name="cookieMaxAge" value="60000" /> </beans:bean> -->
+
+	<beans:bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+
+	<!-- ESTE COMPONENTE PERMITE USAR UN QUERYSTRING PARA CAMBIAR LA LOCALIDAD 
+		DEL LENGUAJE NO FUNCIONA CON AccepHeaderLocaleResolver -->
+	<beans:bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<beans:property name="paramName" value="lenguaje" />
+	</beans:bean>
+	<!-- FINALMENTE DAMOS DE ALTA EL LOCAL CHANGE INTERCEPTOR -->
+	<interceptors>
+		<beans:ref bean="localeChangeInterceptor" />
+	</interceptors>
+	
+	<beans:bean class="org.upiita.spring.formas.FormaSesion" scope="session">
+	
+	<aop:scoped-proxy></aop:scoped-proxy>
+	</beans:bean>
+	
+	
+
+</beans:beans>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+		
+		<bean id="loginFallido" class="org.upiita.spring.seguridad.LoginFallidoManejador" >
+		<property name="defaultFailureUrl" value="/login?errorLogin=true"></property>
+		</bean > 
+		<bean id="loginExitoso" class="org.upiita.spring.seguridad.LoginExitosoManejador">
+		</bean>
+	<!-- auto-config="true" este se pone cuando no se tiene una pagina definida 
+		por el usuario para el login -->
+	<security:http use-expressions="true">
+		<!-- el * es un comodin para cualquier numero -->
+		<security:intercept-url pattern="/blog/*/editar"
+			access="hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')" />
+		<security:intercept-url pattern="/usuario/*/editar"
+			access="hasAnyRole('ROLE_ADMIN','ROLE_EDITOR')" />
+
+		<!-- default-target-url es la url a la que los envia si entra directamente 
+			al /login sin pasar por una url protegida -->
+		<security:form-login login-page="/login"
+			login-processing-url="/autentificar" username-parameter="email"
+			password-parameter="password" default-target-url="/blog/1"
+			authentication-failure-url="/login?errorLogin=true" 
+			authentication-failure-handler-ref="loginFallido"
+			authentication-success-handler-ref="loginExitoso"/>
+		<!-- sobreescribe la pantalla default en un error -->
+		<security:access-denied-handler
+			error-page="/error-403" />
+	</security:http>
+
+
+	<security:authentication-manager
+		erase-credentials="true">
+		<security:authentication-provider>
+			<security:jdbc-user-service
+				data-source-ref="dataSource"
+				users-by-username-query="SELECT email,password,activo FROM usuarios WHERE email=?"
+				authorities-by-username-query="SELECT email, rol FROM usuarios WHERE email=?" />
+			<!-- <security:user-service>
+				<security:user name="juan@email.com" password="1234"
+					authorities="ROLE_ADMIN" />
+				<security:user name="pepe@email.com" password="1234"
+					authorities="ROLE_EDITOR" />
+					 
+			</security:user-service>-->
+		</security:authentication-provider>
+	</security:authentication-manager>
+</beans>
