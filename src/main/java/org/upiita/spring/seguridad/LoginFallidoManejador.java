@@ -17,10 +17,8 @@ public class LoginFallidoManejador extends SimpleUrlAuthenticationFailureHandler
 			HttpServletResponse response, AuthenticationException exception)
 			throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		super.onAuthenticationFailure(request, response, exception);
-		
-		
-		Integer loginFallido = (Integer)request.getSession().getAttribute
+		Integer loginFallido= (Integer)request.getSession().getAttribute("LogiinsFallidos");
+	
 				//Si es la primera vez que se equivoco
 				if(loginFallido==null){
 					loginFallido =1;
@@ -29,6 +27,11 @@ public class LoginFallidoManejador extends SimpleUrlAuthenticationFailureHandler
 					//se incrementa el contador de logins fallidos
 					loginFallido++;
 				}
+		
+		super.onAuthenticationFailure(request, response, exception);
+		
+		
+		
 	}
 	}
 	
